@@ -1,0 +1,197 @@
+[
+ {
+  "slug": "opendeploy",
+  "name": "OpenDeploy",
+  "threat": "High",
+  "win_rate": 58,
+  "deals": 141,
+  "tagline": "Open-core K8s deployments, per-developer pricing",
+  "quick_dismiss": "Great for one Kubernetes cluster and a small team. ShipSafe is for companies that need every runtime verified, audit evidence, and pricing that doesn't grow with headcount.",
+  "why_we_win": [
+   "Statistical verification vs fixed thresholds (fewer false rollbacks, catches gradual regressions)",
+   "ECS, Lambda, Cloud Run, Azure Container Apps and VMs - OpenDeploy is K8s only",
+   "Audit evidence pack for SOC 2 / PCI / SOX",
+   "Per-service pricing: 800 devs on OpenDeploy Enterprise ≈ $528K/yr vs ~$200-270K ShipSafe"
+  ],
+  "landmines": [
+   "Which runtimes besides Kubernetes will be in scope in 2 years?",
+   "Fixed thresholds per service, or statistical comparison to the current version?",
+   "How will you produce evidence for change #4,521 for your auditor?",
+   "How will per-developer pricing scale over 3 years?"
+  ],
+  "they_say": [
+   {
+    "claim": "We're open source, no lock-in",
+    "response": "Rollout definitions export to Argo Rollouts YAML; source code never leaves you. Forking and maintaining OSS internally is the real lock-in."
+   },
+   {
+    "claim": "We're free",
+    "response": "OSS is free; running it costs 0.5-2 FTE. OpenDeploy Cloud is $35-55 per developer, every month."
+   }
+  ],
+  "proof": "Brightpay moved off OpenDeploy Enterprise after a PCI finding: all 140 services (K8s + ECS) on ShipSafe, cost -31%."
+ },
+ {
+  "slug": "flagworks",
+  "name": "FlagWorks",
+  "threat": "Medium-High",
+  "win_rate": 64,
+  "deals": 77,
+  "tagline": "Feature flags leader adding guarded releases",
+  "quick_dismiss": "FlagWorks controls features; ShipSafe controls deployments. Most changes aren't behind a flag - infra, config, dependencies, AI-generated code.",
+  "why_we_win": [
+   "Covers the 70-80% of changes not wrapped in flags",
+   "Real infrastructure rollback (images, Helm values, config)",
+   "Deep Datadog/Prometheus/New Relic verification",
+   "No flag debt; no seat + MAU pricing"
+  ],
+  "landmines": [
+   "What share of production changes are behind a flag, including infra and config?",
+   "How does a flag roll back a bad container image?",
+   "How many active flags do you have and who cleans them up?"
+  ],
+  "they_say": [
+   {
+    "claim": "ShipSafe has no feature flags",
+    "response": "By design - we integrate with your flag tool and cover everything flags can't. Simple release flags come with ShipSafe Flags (Q1 2027, NDA)."
+   }
+  ],
+  "proof": "Lumora Media runs both; ShipSafe caught a CDN-config regression during a live event that would have hit 2.1M viewers."
+ },
+ {
+  "slug": "megasuite",
+  "name": "MegaSuite",
+  "threat": "High",
+  "win_rate": 47,
+  "deals": 68,
+  "tagline": "Incumbent all-in-one suite, Deploy module bundled",
+  "quick_dismiss": "Keep MegaSuite for CI. ShipSafe is the safety layer on top: automated verification and 41-second rollback instead of manual gates.",
+  "why_we_win": [
+   "Automated statistical verification vs manual approval gates",
+   "Covers ECS/Lambda/VMs without custom scripts",
+   "Fast innovation; Deploy module barely changed in 2 years",
+   "~60% of MegaSuite customers never adopted Deploy beyond a pilot"
+  ],
+  "landmines": [
+   "How many services actually deploy through MegaSuite Deploy today?",
+   "Who approves the rollback gate at 2 a.m.?",
+   "Does Deploy cover your ECS and Lambda workloads?"
+  ],
+  "they_say": [
+   {
+    "claim": "Another vendor / tool sprawl",
+    "response": "We remove scripts and dashboard babysitting; one agent that plugs into your MegaSuite pipeline."
+   },
+   {
+    "claim": "You already own it",
+    "response": "You pay for it - are you using it? Ask for the adoption number, then run the side-by-side bad-deploy test."
+   }
+  ],
+  "proof": "Orbital Bank kept MegaSuite CI, added ShipSafe: deploy-caused Sev-1s 9 → 2 in 12 months."
+ },
+ {
+  "slug": "kuberoll",
+  "name": "KubeRoll",
+  "threat": "Medium",
+  "win_rate": 61,
+  "deals": 52,
+  "tagline": "Open-source K8s GitOps rollouts",
+  "quick_dismiss": "KubeRoll gives you the engine; you still write and maintain every analysis template. ShipSafe gives you verification, governance and every runtime out of the box.",
+  "why_we_win": [
+   "No PromQL templates to maintain per service",
+   "Governance + audit evidence",
+   "Multi-runtime",
+   "24/7 enterprise support"
+  ],
+  "landmines": [
+   "Who maintains the analysis templates per service?",
+   "How do you show your auditor which checks each release passed?",
+   "What about ECS and Lambda?"
+  ],
+  "they_say": [
+   {
+    "claim": "It's free",
+    "response": "Customers we displaced spent ~1.5 FTE (~$315K/yr) maintaining templates."
+   }
+  ],
+  "proof": "Ferro Retail Group: KubeRoll checks missed a p99 regression on Black Friday (~$740K lost carts); next Black Friday on ShipSafe: 0 deploy incidents."
+ },
+ {
+  "slug": "autoship",
+  "name": "AutoShip AI",
+  "threat": "Medium",
+  "win_rate": 71,
+  "deals": 41,
+  "tagline": "AI-native 'autonomous releases' startup",
+  "quick_dismiss": "ShipSafe uses AI to explain and statistics to decide. AutoShip AI lets an LLM decide - fine for a demo, hard to defend to an auditor.",
+  "why_we_win": [
+   "Reproducible, explainable verdicts",
+   "SOC 2 Type II, ISO 27001, HIPAA BAA, PCI - AutoShip AI has SOC 2 Type I only",
+   "Production references at 400+ services",
+   "Per-service pricing doesn't tax velocity"
+  ],
+  "landmines": [
+   "Can you reproduce exactly why the AI rolled back - for your auditor?",
+   "Which compliance reports can they share today?",
+   "How many customers run them on 200+ services?"
+  ],
+  "they_say": [
+   {
+    "claim": "ShipSafe is not AI-native",
+    "response": "Copilot + MCP server bring AI where it helps; the rollback decision stays statistical and reproducible."
+   }
+  ],
+  "proof": "Calyx Health evaluated AutoShip AI; GRC blocked it (no HIPAA BAA, SOC 2 Type I). Chose ShipSafe."
+ },
+ {
+  "slug": "changedesk",
+  "name": "ChangeDesk",
+  "threat": "Low-Medium",
+  "win_rate": 66,
+  "deals": 35,
+  "tagline": "CAB / change-approval workflows in ServiceNow",
+  "quick_dismiss": "ChangeDesk records that a change was approved. ShipSafe proves it worked - and rolls it back if it didn't.",
+  "why_we_win": [
+   "Verification + rollback, not just approval",
+   "Policy-as-code auto-approves low-risk changes",
+   "Evidence pack posts to ServiceNow"
+  ],
+  "landmines": [
+   "After approval, how do you prove the change didn't harm production?",
+   "How many changes a day can your CAB review?"
+  ],
+  "they_say": [
+   {
+    "claim": "We already have change management",
+    "response": "Keep it - ShipSafe posts verification evidence into the same change record."
+   }
+  ],
+  "proof": "Quantia Insurance moved low-risk changes to ShipSafe Guard auto-approval; CAB load -60%."
+ },
+ {
+  "slug": "diy",
+  "name": "Build it yourself (Argo/Flagger)",
+  "threat": "High",
+  "win_rate": 52,
+  "deals": 128,
+  "tagline": "In-house rollout scripts + manual watching",
+  "quick_dismiss": "Argo Rollouts is great - ShipSafe can drive it. We add statistical verification, governance and every runtime, so your platform team builds your product instead.",
+  "why_we_win": [
+   "3-year TCO: ~$0.9-1.2M/yr DIY vs ~$270K ShipSafe Enterprise (300 services)",
+   "No bus factor on rollout code",
+   "Audit evidence + DORA included"
+  ],
+  "landmines": [
+   "Who maintains the rollout and analysis code if its author leaves?",
+   "How much engineer time goes to watching releases?",
+   "Is deployment safety your product, or a utility?"
+  ],
+  "they_say": [
+   {
+    "claim": "We can build it in a quarter",
+    "response": "Version 1, for Kubernetes. Then ECS, Lambda, evidence, DORA, on-call... customers retired ~3,800 lines of rollout code on average."
+   }
+  ],
+  "proof": "Northwind Freight retired its in-house scripts: 23 bad releases caught in Q1, deploy pages -70%."
+ }
+]

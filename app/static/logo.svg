@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Competitor Brief">
+  <rect width="64" height="64" rx="10" fill="#1F3A5F"/>
+  <!-- a brief: one page with a folded corner and three lines of text -->
+  <path d="M20 12 H38 L46 20 V52 H20 Z" fill="#FFFFFF"/>
+  <path d="M38 12 V20 H46" fill="#C9D6E5"/>
+  <rect x="25" y="27" width="16" height="3" rx="1" fill="#1F3A5F"/>
+  <rect x="25" y="34" width="16" height="3" rx="1" fill="#1F3A5F"/>
+  <rect x="25" y="41" width="10" height="3" rx="1" fill="#1F3A5F"/>
+</svg>

@@ -1,0 +1,107 @@
+[
+ {
+  "id": 1,
+  "category": "Price",
+  "objection": "You're too expensive.",
+  "response": "Compare to what it replaces: incident minutes, 1-3 engineers maintaining rollout code, and weeks of audit prep. Typical payback is 4-7 months on Business. Let's build your number together with the ROI model - if it doesn't pay back in a year, we shouldn't do this.",
+  "proof": "Ferro Retail: one avoided Black Friday incident (~$740K) = 6 years of their subscription."
+ },
+ {
+  "id": 2,
+  "category": "Price",
+  "objection": "OpenDeploy is cheaper.",
+  "response": "At your size, OpenDeploy's per-developer price grows with every hire (800 devs ≈ $528K/yr on Enterprise). ShipSafe is per service with unlimited users. And OpenDeploy covers Kubernetes only.",
+  "proof": "Brightpay cut total cost 31% switching from OpenDeploy Enterprise."
+ },
+ {
+  "id": 3,
+  "category": "Price",
+  "objection": "We already pay for MegaSuite - deployment is included.",
+  "response": "Included isn't adopted. How many services deploy through it today? Keep MegaSuite CI and let's run a side-by-side bad-deploy test: manual gate vs automatic 41-second rollback.",
+  "proof": "Orbital Bank kept MegaSuite CI and cut deploy-caused Sev-1s from 9 to 2."
+ },
+ {
+  "id": 4,
+  "category": "Build vs buy",
+  "objection": "We can build this with Argo Rollouts.",
+  "response": "You can - and ShipSafe can drive Argo Rollouts. The hard part isn't the rollout; it's statistical verification, multi-runtime, evidence and maintenance. DIY typically costs $0.9-1.2M/yr at 300 services.",
+  "proof": "Northwind retired ~4,000 lines of in-house rollout code."
+ },
+ {
+  "id": 5,
+  "category": "Timing",
+  "objection": "Not a priority this quarter.",
+  "response": "Understood. What's the cost of the next deploy-caused incident, and when is your next audit? A 3-week POV on 2 services needs ~2 hours of your team's time and gives you the data to decide.",
+  "proof": "POV install median < 2 hours."
+ },
+ {
+  "id": 6,
+  "category": "Product",
+  "objection": "We need feature flags.",
+  "response": "Flags and deployment safety solve different problems; most customers use both. We integrate with FlagWorks and others, and simple release flags arrive with ShipSafe Flags (Q1 2027, under NDA).",
+  "proof": "Lumora Media runs FlagWorks + ShipSafe."
+ },
+ {
+  "id": 7,
+  "category": "Product",
+  "objection": "We have Windows VMs.",
+  "response": "Windows VM support is planned for Q2 2027 (NDA). Most customers start with Kubernetes/ECS services, where most deploy risk is, and add Windows later.",
+  "proof": ""
+ },
+ {
+  "id": 8,
+  "category": "Trust",
+  "objection": "I don't trust automatic rollbacks.",
+  "response": "Start in 'advise' mode: ShipSafe gives the verdict and a human clicks rollback. Customers switch to automatic after seeing ~95%+ agreement with their SREs, usually in 2-3 weeks. Every verdict is explainable.",
+  "proof": "Hexa Games: 0 false rollbacks on launch day."
+ },
+ {
+  "id": 9,
+  "category": "Trust",
+  "objection": "AutoShip AI uses AI to decide - isn't that more advanced?",
+  "response": "An AI decision you can't reproduce is hard to defend in a post-mortem or an audit. ShipSafe decides statistically and uses AI (Copilot) to explain. Ask them for SOC 2 Type II and HIPAA.",
+  "proof": "Calyx Health chose ShipSafe after GRC blocked AutoShip AI."
+ },
+ {
+  "id": 10,
+  "category": "Security",
+  "objection": "Our security team won't allow an agent in our clusters.",
+  "response": "The agent is scoped to the namespaces you onboard, needs no secrets or database access, and source code never leaves you. Self-hosted control plane on Enterprise. We provide SIG Lite + CAIQ upfront.",
+  "proof": "Orbital Bank and Calyx Health passed security review in ~3 weeks."
+ },
+ {
+  "id": 11,
+  "category": "Security",
+  "objection": "We need FedRAMP.",
+  "response": "Honest answer: we're FedRAMP Moderate In Process with a Q2 2027 target - not authorized today. If authorization is required at signature, we're not the right fit yet; if it's required for production in 2027, let's align timelines.",
+  "proof": ""
+ },
+ {
+  "id": 12,
+  "category": "Vendor",
+  "objection": "You're a startup - what if you disappear?",
+  "response": "$41M ARR, 310 customers, 128% NRR, $142M raised, Leader in the Gridline Wave. Rollout definitions export to Argo format and we offer source-code escrow on Enterprise.",
+  "proof": ""
+ },
+ {
+  "id": 13,
+  "category": "Change",
+  "objection": "Our engineers won't adopt another tool.",
+  "response": "Engineers don't learn a new UI to benefit - releases flow from their existing CI and verdicts arrive in Slack. Unlimited users, no seat negotiations.",
+  "proof": "First verified canary median 9 days after signature."
+ },
+ {
+  "id": 14,
+  "category": "Product",
+  "objection": "Our observability data is messy.",
+  "response": "Verify works with whatever golden signals you have; it compares canary vs baseline from the same source, so absolute noise matters less. We help define the first signals in onboarding.",
+  "proof": ""
+ },
+ {
+  "id": 15,
+  "category": "Process",
+  "objection": "Procurement takes 6 months.",
+  "response": "Use your AWS/Google/Azure marketplace commit: a private offer reuses your existing cloud agreement and typically saves ~3 weeks.",
+  "proof": ""
+ }
+]
