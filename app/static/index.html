@@ -4,146 +4,242 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Competitor Brief</title>
+  <meta name="description" content="Competitive intelligence for every team: instant, sourced answers about competitors, pricing, win/loss and customers.">
   <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
   <!-- Sign in -->
   <section id="login" class="login hidden">
-    <form id="login-form" class="login-box">
-      <div class="brand"><img src="/static/logo.svg" alt=""><span>Competitor Brief</span></div>
-      <label for="code">Access code</label>
-      <input id="code" type="password" autocomplete="current-password" required>
-      <button class="btn primary" type="submit">Sign in</button>
-      <p id="login-error" class="error"></p>
-      <p class="fine">Demo workspace. ShipSafe and all companies shown are fictional.</p>
-    </form>
+    <div class="login-pitch">
+      <div class="brand brand-lg"><img src="/static/logo.svg" alt=""><span>Competitor Brief</span></div>
+      <h1>We research your competitors, so your team doesn't have to guess.</h1>
+      <p class="lead">Competitor Brief is a research service with an app. We study your market and your
+        competitors, then give your whole team the answers in one simple app.</p>
+      <ol class="how">
+        <li><b>You tell us about your company</b><span>What you sell, to whom, and who you think you compete with.</span></li>
+        <li><b>We do the research</b><span>We map your market and every competitor. As DevOps engineers we also install
+          competitors' products in a live lab and test what they really do, not what their website says.</span></li>
+        <li><b>You get the app</b><span>All our findings in one place: answers, battlecards and clear recommendations
+          for leadership, marketing and sales.</span></li>
+      </ol>
+      <p class="how-note"><b>In this demo you can preview step 3 right now.</b> Describe any company and an AI builds
+        a quick first draft from public information in about 30 seconds. The real app is built from our research.</p>
+    </div>
+    <div class="login-side">
+      <form id="login-form" class="login-box">
+        <h2>Open the demo</h2>
+        <label for="code">Access code</label>
+        <input id="code" type="password" autocomplete="current-password" required>
+        <button class="btn primary block" type="submit">Enter the demo</button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+      <div class="about-demo">
+        <span class="tool-k">What's inside</span>
+        <p><b>1. A preview for your company.</b> Describe it in one sentence: see your market, where you stand in
+          it, and how to improve. An AI draft from public information.</p>
+        <p><b>2. A finished example: ShipSafe.</b> A company we invented, shown the way the app looks after our
+          research, including our hands-on lab tests of its competitors.</p>
+      </div>
+    </div>
   </section>
 
   <div id="app" class="hidden">
     <header class="topbar">
       <div class="topbar-inner">
-        <div class="brand"><img src="/static/logo.svg" alt=""><span>Competitor Brief</span></div>
-        <nav>
-          <a href="#" data-view="start" class="active">Start here</a>
-          <a href="#" data-view="home">Overview</a>
-          <a href="#" data-view="ask">Search</a>
-          <a href="#" data-view="cards">Competitors</a>
-          <a href="#" data-view="objections">Objections</a>
-          <a href="#" data-view="briefings">Account briefs</a>
+        <a class="brand" href="#ask"><img src="/static/logo.svg" alt=""><span>Competitor Brief</span></a>
+        <nav aria-label="Main">
+          <a href="#company" data-view="company" class="nav-yours">Preview for your company</a>
+          <span class="nav-sep" aria-hidden="true"></span>
+          <span class="nav-label">Example</span>
+          <a href="#ask" data-view="ask">Ask</a>
+          <a href="#cards" data-view="cards">Competitors</a>
+          <a href="#objections" data-view="objections">Objections</a>
+          <a href="#briefings" data-view="briefings">Account briefs</a>
         </nav>
-        <span class="workspace">Demo: ShipSafe</span>
+        <span class="workspace" id="ws-pill"><span class="dot"></span><span id="ws-pill-text">ShipSafe sample</span></span>
       </div>
     </header>
 
     <main>
-      <!-- Start here -->
-      <section id="view-start" class="view">
-        <div class="intro">
-          <h1 class="intro-title">Instant answers about your market, for every team.</h1>
-          <p class="intro-lead">Ask a question and get a short answer from your company's own knowledge:
-            competitors, customers, pricing, win/loss results and market data.</p>
-          <p class="intro-note">Demo data: a fictional company, <b>ShipSafe</b>, and its competitors.</p>
+      <!-- Your company: wizard, then the generated workspace -->
+      <section id="view-company" class="view hidden">
+        <div id="wizard">
+          <div class="page-head wz-head">
+            <ol class="how-strip" aria-label="How Competitor Brief works">
+              <li>You tell us about your company</li><li>We do the research</li><li class="here">You get the app <em>preview it here</em></li>
+            </ol>
+            <h1>Preview the app on a company you know.</h1>
+            <p class="lead">One sentence is enough. In about 30 seconds an AI drafts what the app would show: your whole
+              market, where you stand in it, and how to improve. The real app is filled with our research instead.</p>
+          </div>
+          <form id="wz-form" class="wizard" novalidate>
+            <label for="wz-desc">What does the company do?</label>
+            <textarea id="wz-desc" rows="3" maxlength="800" dir="auto" placeholder="e.g. An app that helps small restaurants plan staff shifts and run payroll"></textarea>
+            <div class="wz-examples"><span class="muted small">Or start from an example:</span><div id="wz-examples" class="chips"></div></div>
+
+            <details class="wz-more" id="wz-more">
+              <summary>Add details <span class="opt">optional: every detail sharpens the analysis</span></summary>
+              <div class="wz-row">
+                <div><label for="wz-name">Company name</label><input id="wz-name" maxlength="80" dir="auto" placeholder="e.g. ShiftWise"></div>
+                <div><label for="wz-industry">Industry</label><input id="wz-industry" maxlength="80" dir="auto" placeholder="e.g. HR tech"></div>
+              </div>
+              <label class="wz-gap">Who buys it?</label>
+              <div class="chips" id="wz-customers"></div>
+              <label class="wz-gap">Where do you sell?</label>
+              <div class="chips" id="wz-region"></div>
+              <label for="wz-buyer" class="wz-gap">Who makes the buying decision?</label>
+              <input id="wz-buyer" maxlength="80" dir="auto" placeholder="e.g. the restaurant owner, the CFO, the head of IT">
+              <label for="wz-comp" class="wz-gap">Competitors you know</label>
+              <input id="wz-comp" maxlength="300" dir="auto" placeholder="e.g. 7shifts, Excel, a local payroll accountant">
+              <label for="wz-decision" class="wz-gap">A decision you're facing</label>
+              <textarea id="wz-decision" rows="2" maxlength="400" dir="auto" placeholder="e.g. Should we raise our prices next year?"></textarea>
+              <div id="wz-decisions" class="chips"></div>
+            </details>
+
+            <p id="wz-error" class="error" role="alert"></p>
+            <div class="wz-nav">
+              <span class="muted small">Takes about 20 seconds for the market, then your plan.</span>
+              <button type="submit" class="btn primary" id="wz-next">Map my market</button>
+            </div>
+          </form>
+          <p class="muted small wz-alt">Want to see the finished app first? <a href="#ask">See the ShipSafe example</a>, built the way the app looks after our research.</p>
         </div>
-        <table class="table who">
-          <tbody>
-            <tr><td><b>Sales</b></td><td>Beat a competitor, handle an objection, prepare for a meeting</td></tr>
-            <tr><td><b>GTM &amp; marketing</b></td><td>Positioning, target industries, messaging per buyer</td></tr>
-            <tr><td><b>Product</b></td><td>Which gaps cost us deals, what competitors are building</td></tr>
-            <tr><td><b>Leadership</b></td><td>Competitive risks, win rates, where to invest</td></tr>
-            <tr><td><b>Customer success</b></td><td>Customer stories, renewal and expansion arguments</td></tr>
-          </tbody>
-        </table>
-        <ol class="steps">
-          <li><b>Click a question</b> below, or type your own in <button class="link" data-go="ask">Search</button>.</li>
-          <li><b>Read the answer</b>: the key point first, then the reasons and the next step.</li>
-          <li><b>Explore</b> <button class="link" data-go="cards">Competitors</button>, <button class="link" data-go="objections">Objections</button> and <button class="link" data-go="briefings">Account briefs</button>.</li>
-        </ol>
-        <h2 class="section">Try a question</h2>
-        <ul id="start-questions" class="link-list start-q"></ul>
+
+        <div id="wz-loading" class="hidden">
+          <div class="loading-card">
+            <h2 id="ld-title">Building your workspace…</h2>
+            <ol id="ld-steps" class="ld-steps"></ol>
+            <p class="muted small" id="ld-time"></p>
+          </div>
+        </div>
+
+        <div id="ws" class="hidden"></div>
       </section>
 
-      <!-- Overview -->
-      <section id="view-home" class="view hidden">
-        <h1>Overview</h1>
-        <p class="sub">Competitive results, Q4 2025 - Q3 2026</p>
-        <div class="stats">
-          <div><span class="label">Competitive win rate</span><span id="t-win" class="num">-</span><span class="note">+8 pts vs prior year</span></div>
-          <div><span class="label">Competitive deals closed</span><span id="t-deals" class="num">-</span><span class="note">7 competitors</span></div>
-          <div><span class="label">Win rate with a POV</span><span id="t-pov" class="num">-</span><span class="note">41% without</span></div>
-          <div><span class="label">Average won ACV</span><span id="t-acv" class="num">-</span><span class="note">median cycle 82 days</span></div>
+      <!-- Ask (home) -->
+      <section id="view-ask" class="view">
+        <div class="hero">
+          <a class="sample-note" href="#company">You're looking at <b>ShipSafe</b>, a company we invented, shown the way the app looks after our research. <span>Preview it for your company →</span></a>
+          <h1>Ask anything about your market.</h1>
+          <p class="lead">Short, sourced answers from your own competitive knowledge, for leadership, marketing, product and sales.</p>
+          <form id="ask-form" class="ask">
+            <input id="question" type="text" autocomplete="off" placeholder="e.g. What is our biggest competitive risk right now?" aria-label="Your question" required>
+            <button class="btn primary" type="submit">Ask</button>
+          </form>
+          <div class="roles" role="tablist" aria-label="Example questions by team" id="roles"></div>
+          <div id="examples" class="examples"></div>
         </div>
-        <div class="two-col">
-          <div class="box">
-            <h2>Win rate by competitor</h2>
-            <div id="chart" class="chart" role="img" aria-label="Win rate by competitor"></div>
-            <details><summary>Show as table</summary><table id="chart-table" class="table"></table></details>
-          </div>
-          <div class="box">
-            <h2>Common questions</h2>
-            <ul id="home-links" class="link-list"></ul>
-          </div>
-        </div>
-      </section>
 
-      <!-- Search -->
-      <section id="view-ask" class="view hidden">
-        <h1>Search</h1>
-        <p class="sub">Pricing, competitors, references, security answers and talk tracks.</p>
-        <form id="ask-form" class="search">
-          <input id="question" type="search" placeholder="e.g. How do we beat OpenDeploy at a 600-engineer fintech?" required>
-          <button class="btn primary" type="submit">Search</button>
-        </form>
         <div id="result"></div>
-        <div id="suggest-wrap">
-          <h2 class="section" id="suggest-title">Suggested questions</h2>
-          <div id="suggestions"></div>
+        <div id="earlier-wrap" class="hidden">
+          <h2 class="section-title">Earlier in this session</h2>
+          <div id="earlier"></div>
         </div>
-        <div id="recent-wrap" class="hidden">
-          <h2 class="section">Recent searches</h2>
-          <ul id="recent" class="link-list"></ul>
-        </div>
+
+        <section class="block">
+          <div class="block-head">
+            <div>
+              <h2>What we found in our lab</h2>
+              <p class="muted lab-sub">We ran every competitor in a live environment and broke things on purpose. Their claims vs what we measured.</p>
+            </div>
+            <p id="lab-round" class="muted small"></p>
+          </div>
+          <div id="lab-kpis" class="stats"></div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Time to stop a bad release</h3>
+              <span class="muted small">Error spike injected · median of 10 runs · shorter is better</span>
+            </div>
+            <div id="chart" class="chart"></div>
+            <p id="chart-note" class="muted small chart-note"></p>
+          </div>
+          <div class="panel claims-panel">
+            <div class="panel-head">
+              <h3>Their homepage says… we measured</h3>
+              <span class="muted small">Click a row to open the battlecard</span>
+            </div>
+            <div id="lab-claims" class="lab-claims"></div>
+          </div>
+          <p id="lab-env" class="muted small lab-env"></p>
+        </section>
+
+        <section class="block">
+          <div class="block-head"><h2>More than answers</h2></div>
+          <div class="tools">
+            <a class="tool" href="#cards">
+              <span class="tool-k">Competitors</span>
+              <b>Battlecards for 7 competitors</b>
+              <span>How to win, questions to ask and how to respond to their claims, with customer proof.</span>
+            </a>
+            <a class="tool" href="#objections">
+              <span class="tool-k">Objections</span>
+              <b>A response in seconds</b>
+              <span>Type what the customer said and get what to say, why it works, and what to ask next.</span>
+            </a>
+            <a class="tool" href="#briefings">
+              <span class="tool-k">Account briefs</span>
+              <b>Ready for any meeting in 1 minute</b>
+              <span>The account, likely competitors, what to say to each stakeholder and the best reference.</span>
+            </a>
+          </div>
+        </section>
       </section>
 
       <!-- Competitors -->
       <section id="view-cards" class="view hidden">
-        <h1>Competitors</h1>
-        <p class="sub">Select a competitor to see its battlecard.</p>
-        <table class="table clickable" id="comp-table"></table>
-        <div id="card-detail" class="box hidden"></div>
+        <div id="cards-list">
+          <div class="page-head">
+            <h1>Competitors</h1>
+            <p class="lead">Seven competitors, ranked by threat. Open one for its battlecard.</p>
+          </div>
+          <div id="comp-grid" class="grid"></div>
+        </div>
+        <div id="card-detail" class="hidden"></div>
       </section>
 
       <!-- Objections -->
       <section id="view-objections" class="view hidden">
-        <h1>Objections</h1>
-        <p class="sub">Enter what the customer said to get a suggested response.</p>
-        <form id="obj-form" class="form-box">
-          <textarea id="obj-text" rows="2" placeholder="e.g. We already pay for MegaSuite, deployment is included." required></textarea>
-          <div class="form-row">
-            <select id="obj-comp"><option value="">Competitor (optional)</option></select>
+        <div class="page-head">
+          <h1>Objections</h1>
+          <p class="lead">Type what the customer said. Get what to say back, the facts behind it and what to ask next.</p>
+        </div>
+        <form id="obj-form" class="compose">
+          <textarea id="obj-text" rows="2" placeholder="e.g. We already pay for MegaSuite, and deployment is included." aria-label="The objection" required></textarea>
+          <div class="compose-row">
+            <select id="obj-comp" aria-label="Competitor in the deal"><option value="">Any competitor</option></select>
             <button class="btn primary" type="submit">Get response</button>
           </div>
         </form>
         <div id="obj-out"></div>
-        <h2 class="section">Objection library</h2>
-        <div id="obj-lib"></div>
+        <h2 class="section-title">Objection library <span id="obj-count" class="muted"></span></h2>
+        <div id="obj-lib" class="lib"></div>
       </section>
 
-      <!-- Briefs -->
+      <!-- Account briefs -->
       <section id="view-briefings" class="view hidden">
-        <h1>Account briefs</h1>
-        <p class="sub">Select an account to prepare a pre-call brief.</p>
-        <table class="table clickable" id="prospect-table"></table>
-        <form id="brief-form" class="form-box">
-          <label for="brief-text">Or describe another account</label>
-          <textarea id="brief-text" rows="2" placeholder="Industry, size, stack, current tool, what happened recently"></textarea>
-          <div class="form-row"><span></span><button class="btn" type="submit">Prepare brief</button></div>
-        </form>
+        <div class="page-head">
+          <h1>Account briefs</h1>
+          <p class="lead">Choose an account to get a brief you can read in 1 minute before the call.</p>
+        </div>
         <div id="brief-out"></div>
+        <div id="prospect-grid" class="grid"></div>
+        <form id="brief-form" class="compose">
+          <label for="brief-text">Or describe any account</label>
+          <textarea id="brief-text" rows="2" placeholder="Industry, size, tech stack, current tool, and what happened recently"></textarea>
+          <div class="compose-row"><span></span><button class="btn primary" type="submit">Prepare brief</button></div>
+        </form>
       </section>
     </main>
-    <footer>Competitor Brief · Demo workspace with fictional data</footer>
+    <footer>
+      <span>Competitor Brief</span>
+      <span class="muted">ShipSafe is a company we invented to show the finished app. Previews are AI drafts from public information: verify key facts before acting.</span>
+    </footer>
   </div>
   <script src="/static/app.js"></script>
+  <script src="/static/company.js"></script>
 </body>
 </html>

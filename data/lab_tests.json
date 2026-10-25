@@ -1,0 +1,117 @@
+{
+  "_note": "Structured copy of context/lab_tests.md for the home page. Fictional demo data; update both together.",
+  "round": "Lab round 3 · Aug 18 - Sep 12, 2026",
+  "environment": "Mid-size live environment: 60 microservices on EKS + ECS + Lambda, ~1,800 requests/second, median of 10 runs",
+  "kpis": [
+    {
+      "label": "Products tested in a live environment",
+      "value": "7",
+      "note": "plus ShipSafe as the reference"
+    },
+    {
+      "label": "Failures injected",
+      "value": "210",
+      "note": "3 failure types x 10 runs x 7 products"
+    },
+    {
+      "label": "Slow-building problems competitors caught",
+      "value": "23 of 70",
+      "note": "ShipSafe caught 10 of 10"
+    },
+    {
+      "label": "Competitor claims that fully held up",
+      "value": "0 of 6",
+      "note": "2 were partly true"
+    }
+  ],
+  "time_to_stop": [
+    {
+      "name": "ShipSafe",
+      "slug": null,
+      "seconds": 41,
+      "label": "41 s",
+      "ours": true
+    },
+    {
+      "name": "Build it yourself (Argo/Flagger)",
+      "slug": "diy",
+      "seconds": 100,
+      "label": "1 min 40 s"
+    },
+    {
+      "name": "KubeRoll",
+      "slug": "kuberoll",
+      "seconds": 110,
+      "label": "1 min 50 s"
+    },
+    {
+      "name": "AutoShip AI",
+      "slug": "autoship",
+      "seconds": 128,
+      "label": "2 min 08 s"
+    },
+    {
+      "name": "OpenDeploy",
+      "slug": "opendeploy",
+      "seconds": 190,
+      "label": "3 min 10 s"
+    },
+    {
+      "name": "FlagWorks",
+      "slug": "flagworks",
+      "seconds": 270,
+      "label": "4 min 30 s"
+    },
+    {
+      "name": "MegaSuite",
+      "slug": "megasuite",
+      "seconds": 1020,
+      "label": "17 min (manual)"
+    }
+  ],
+  "time_to_stop_note": "ChangeDesk is not shown: it approves changes before release and never watches production, so it did not stop any of the failures.",
+  "claims": [
+    {
+      "name": "AutoShip AI",
+      "slug": "autoship",
+      "claim": "\"Our AI catches bad releases in under 30 seconds.\"",
+      "measured": "Median 2 min 08 s. Fastest run: 1 min 14 s. None under 30 s.",
+      "held": false
+    },
+    {
+      "name": "OpenDeploy",
+      "slug": "opendeploy",
+      "claim": "\"Set up in 5 minutes.\"",
+      "measured": "First deploy in 6 min, true. Production-ready for 20 services: 2.5 engineer-days.",
+      "held": true
+    },
+    {
+      "name": "FlagWorks",
+      "slug": "flagworks",
+      "claim": "\"Instant kill switch. Turn off any feature in milliseconds.\"",
+      "measured": "1.8 s on servers, true. But a bad config can't be flagged off: manual rollback took 11 min.",
+      "held": true
+    },
+    {
+      "name": "KubeRoll",
+      "slug": "kuberoll",
+      "claim": "\"Automated canary analysis. Zero-downtime rollouts.\"",
+      "measured": "Caught only 4 of 10 slow-building problems with default settings.",
+      "held": false
+    },
+    {
+      "name": "MegaSuite",
+      "slug": "megasuite",
+      "claim": "\"Safe deployments, built into the platform you already own.\"",
+      "measured": "No automatic rollback. A human took a median 17 min to roll back.",
+      "held": false
+    },
+    {
+      "name": "ChangeDesk",
+      "slug": "changedesk",
+      "claim": "\"Approve low-risk changes in seconds.\"",
+      "measured": "Auto-approvals took a median 4 min; high-risk changes waited 26 hours for the change board.",
+      "held": false
+    }
+  ]
+}

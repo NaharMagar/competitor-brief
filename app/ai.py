@@ -7,6 +7,7 @@ API key). The model is configurable with MODEL_ID because availability differs p
 import logging
 import os
 import time
+from collections.abc import Iterator
 
 from google import genai
 from google.genai import errors as genai_errors
@@ -43,6 +44,9 @@ Rules:
      leadership or internal questions.
   4. One line: **Next step:** what to do now.
   Never more than ~120 words. Never repeat the question.
+- For performance questions, use the lab test results: give the competitor's public claim, then what
+  we measured in our live test environment, with the test conditions in a few words (e.g. "mid-size
+  environment, 60 services, median of 10 runs"). Include where the competitor did well if relevant.
 - End with a line "Sources:" naming the documents you used in plain words, never file paths, e.g.
   "Sources: OpenDeploy profile, Company primer, Sales playbook".
 - Write like an experienced sales-enablement colleague, not a chatbot: no greetings, no "Great
@@ -61,32 +65,54 @@ def _client_get() -> genai.Client:
     return _client
 
 
-def _generate(system: str, user: str, history: list[dict] | None = None) -> str:
+def _request(system: str, user: str, history: list[dict] | None, knowledge: str | None = None):
     contents = []
     for turn in (history or [])[-6:]:
         role = "model" if turn.get("role") == "assistant" else "user"
         contents.append(types.Content(role=role, parts=[types.Part(text=turn.get("text", "")[:4000])]))
     contents.append(types.Content(role="user", parts=[types.Part(text=user)]))
     config = types.GenerateContentConfig(
-        system_instruction=f"{system}\n\n#### KNOWLEDGE BASE ####\n{kb.corpus()}",
+        system_instruction=f"{system}\n\n#### KNOWLEDGE BASE ####\n{kb.corpus() if knowledge is None else knowledge}",
         temperature=0.3,
         max_output_tokens=4096,
     )
-    try:
-        return _call(MODEL_ID, contents, config)
-    except Exception:
-        # The default is a preview model; if it is unavailable or out of quota, answer with the
-        # GA fallback instead of failing the demo.
-        logger.exception("Primary model %s failed, falling back to %s", MODEL_ID, FALLBACK_MODEL)
-        return _call(FALLBACK_MODEL, contents, config)
+    return contents, config
 
 
-def _call(model: str, contents, config) -> str:
+def _stream(system: str, user: str, history: list[dict] | None = None, knowledge: str | None = None) -> Iterator[str]:
+    """Yield the answer as it is generated. The default is a preview model; if it fails before
+    the first chunk (unavailable, out of quota), answer with the GA fallback instead."""
+    contents, config = _request(system, user, history, knowledge)
+    for model in (MODEL_ID, FALLBACK_MODEL):
+        started = False
+        try:
+            for chunk in _open_stream(model, contents, config):
+                if chunk.text:
+                    started = True
+                    yield chunk.text
+            if not started:
+                yield "_No answer was generated. Try rephrasing the question._"
+            return
+        except Exception:
+            if started or model == FALLBACK_MODEL:
+                raise
+            logger.exception("Primary model %s failed, falling back to %s", MODEL_ID, FALLBACK_MODEL)
+
+
+def _open_stream(model: str, contents, config):
+    def start():
+        stream = _client_get().models.generate_content_stream(model=model, contents=contents, config=config)
+        first = next(stream, None)
+        return iter(()) if first is None else _chain(first, stream)
+    return retry_429(start, model)
+
+
+def retry_429(fn, model: str):
+    """Call fn(), retrying with backoff while Vertex answers 429 (quota)."""
     delay = 3
     for attempt in range(4):
         try:
-            resp = _client_get().models.generate_content(model=model, contents=contents, config=config)
-            return (resp.text or "").strip() or "_No answer was generated. Try rephrasing the question._"
+            return fn()
         except genai_errors.ClientError as e:
             if e.code != 429 or attempt == 3:
                 raise
@@ -96,11 +122,16 @@ def _call(model: str, contents, config) -> str:
     raise RuntimeError("unreachable")
 
 
-def ask(question: str, history: list[dict] | None = None) -> str:
-    return _generate(BASE_RULES, question, history)
+def _chain(first, rest):
+    yield first
+    yield from rest
 
 
-def handle_objection(objection: str, competitor: str | None) -> str:
+def ask(question: str, history: list[dict] | None = None) -> Iterator[str]:
+    return _stream(BASE_RULES, question, history)
+
+
+def handle_objection(objection: str, competitor: str | None) -> Iterator[str]:
     system = BASE_RULES + """
 Task: the rep just heard an objection on a call. Keep it under ~120 words. Reply with:
 1. **Say this** - a 2-4 sentence response the rep can say verbatim, in a calm, confident tone.
@@ -109,10 +140,10 @@ Task: the rep just heard an objection on a call. Keep it under ~120 words. Reply
 4. **Proof to offer** - the best reference customer or case study and why.
 """
     ctx = f"Competitor in the deal: {competitor}.\n" if competitor else ""
-    return _generate(system, f"{ctx}Objection: \"{objection}\"")
+    return _stream(system, f"{ctx}Objection: \"{objection}\"")
 
 
-def briefing(prospect: dict | None, free_text: str | None) -> str:
+def briefing(prospect: dict | None, free_text: str | None) -> Iterator[str]:
     system = BASE_RULES + """
 Task: write a pre-call briefing a rep can read in 1 minute (max ~220 words, short bullets). Sections:
 ## Snapshot (table: industry, size, stack, current tool, trigger)
@@ -129,4 +160,4 @@ Task: write a pre-call briefing a rep can read in 1 minute (max ~220 words, shor
         user = f"Prepare the briefing for this prospect from prospects/prospects.json:\n{details}"
     else:
         user = f"Prepare the briefing for this prospect described by the rep:\n{free_text}"
-    return _generate(system, user)
+    return _stream(system, user)

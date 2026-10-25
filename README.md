@@ -4,7 +4,7 @@ A sales and go-to-market copilot shown on a **fictional** company. ShipSafe is a
 deployment-safety SaaS, and all 7 competitors, customers, prospects and numbers are invented.
 The app is used to demo what a competitive-intelligence assistant can do for a sales team.
 
-- **Live:** https://rivalyst-978154020895.us-central1.run.app (access code: `Competitor Brief-Demo-26`)
+- **Live:** https://competitor-brief-qmhggel5zq-uc.a.run.app (access code: `Brief-Demo-26`)
 - **GCP:** project `rivalyst-demo-f9efeb`, account `competitivebrief93@gmail.com`, Cloud Run
   service `competitor-brief` in `us-central1`. Budget alert: 75 ILS/month at 50/90/100%.
 - **AI:** Gemini on Vertex AI through the runtime service account (no API keys). The default is
@@ -13,11 +13,11 @@ The app is used to demo what a competitive-intelligence assistant can do for a s
 ## What's inside
 | Tab | What it does |
 |---|---|
-| Overview | KPI tiles and win rate by competitor |
-| Ask Competitor Brief | Free-form questions, answered only from `data/`, with sources, copy and PDF |
-| Battlecards | 7 competitors: quick dismiss, why we win, landmines, "they say / you say", proof, full profile |
-| Objection handler | A response to say on the call, why it works, the next question and the best proof. Includes a library of 15 objections |
-| Pre-call briefings | 8 fictional prospects, or describe any prospect, to get a 2-minute brief |
+| Your company | Landing page after sign-in. One sentence about any company (yours, a client's or an invented one), plus optional details. Step 1 (~20 s): an overview of the whole market: segments, how buyers choose, trends, where the money is, and a market map placing every player including the company. Step 2 (~15 s more): where the company stands (white space, strengths, weaknesses, blind spots), 5 moves to improve ranked by impact vs effort, and a decision brief, using every detail given plus the market analysis. Then battlecards on demand, Ask scoped to that company, and a PDF brief. Stored only in the visitor's browser (`app/workspace.py`, `app/static/company.js`) |
+| Ask | ShipSafe sample. Free-form questions with example questions per team (leadership, marketing, product, sales, customer success); answers stream in with source chips, copy and PDF. Below: "What we found in our lab" (competitor claims vs measured results, from `data/lab_tests.json`) |
+| Competitors | 7 competitor cards ranked by threat; each opens a battlecard (`#cards/<slug>`): one-line dismiss, why we win, landmine questions, "they say / you say", proof, full profile |
+| Objections | A response to say on the call, why it works, the next question and the best proof. Includes a library of 15 objections |
+| Account briefs | 8 fictional prospects, or describe any account, to get a 1-minute pre-call brief |
 
 ## Knowledge base (`data/`)
 `context/` holds the company primer, sales playbook, messaging, win/loss, security FAQ and market.
@@ -35,7 +35,7 @@ edit the data files and redeploy.
     CLOUDSDK_CORE_ACCOUNT=competitivebrief93@gmail.com gcloud run deploy competitor-brief --source . \
       --project=rivalyst-demo-f9efeb --region=us-central1 --allow-unauthenticated \
       --memory=1Gi --max-instances=3 --concurrency=20 --timeout=180 \
-      --set-env-vars=GCP_PROJECT_ID=rivalyst-demo-f9efeb,VERTEX_REGION=global,DEMO_CODE=Competitor Brief-Demo-26,MODEL_ID=gemini-3-flash-preview,FALLBACK_MODEL=gemini-2.5-flash
+      --set-env-vars="GCP_PROJECT_ID=rivalyst-demo-f9efeb,VERTEX_REGION=global,DEMO_CODE=Brief-Demo-26,MODEL_ID=gemini-3-flash-preview,FALLBACK_MODEL=gemini-2.5-flash"
 
 To change the access code, change `DEMO_CODE` and redeploy. Each visitor is limited to
 40 AI calls per 10 minutes.

@@ -8,6 +8,7 @@ import hashlib
 import html as htmllib
 import hmac
 import io
+import json
 import logging
 import os
 import re
@@ -21,7 +22,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from xhtml2pdf import pisa
 
-from . import ai, kb
+from . import ai, kb, workspace
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("rivalyst")
@@ -74,13 +75,33 @@ def _html(text: str) -> str:
     return md.markdown(_fix_lists(text), extensions=["tables", "sane_lists", "fenced_code"])
 
 
-def _ai_reply(fn, *args) -> dict:
-    try:
-        text = fn(*args)
-    except Exception:  # surface a clean message; details go to logs
-        logger.exception("AI call failed")
-        raise HTTPException(502, "The AI service didn't answer. Please try again.")
-    return {"markdown": text, "html": _html(text)}
+_SOURCES = re.compile(r"\n\s*\**Sources?:?\**:?\s*(.+?)\s*$", re.I | re.S)
+
+
+def _split_sources(text: str) -> tuple[str, list[str]]:
+    """Pull the trailing "Sources: a, b" line out of an answer so the UI can show it as chips."""
+    m = _SOURCES.search(text)
+    if not m or "\n" in m.group(1).strip():
+        return text, []
+    return text[:m.start()].rstrip(), [x.strip(" .*") for x in m.group(1).split(",") if x.strip(" .*")]
+
+
+def _ai_stream(chunks) -> StreamingResponse:
+    """Stream the answer as NDJSON: {"delta"} lines while it is generated, then one {"done"} line
+    with the final HTML and sources (or one {"error"} line)."""
+    def gen():
+        text = ""
+        try:
+            for piece in chunks:
+                text += piece
+                yield json.dumps({"delta": piece}) + "\n"
+        except Exception:  # surface a clean message; details go to logs
+            logger.exception("AI call failed")
+            yield json.dumps({"error": "The AI service didn't answer. Please try again."}) + "\n"
+            return
+        body, sources = _split_sources(text.strip())
+        yield json.dumps({"done": True, "markdown": text.strip(), "html": _html(body), "sources": sources}) + "\n"
+    return StreamingResponse(gen(), media_type="application/x-ndjson", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 class Login(BaseModel):
@@ -90,6 +111,27 @@ class Login(BaseModel):
 class AskIn(BaseModel):
     question: str = Field(min_length=2, max_length=2000)
     history: list[dict] = []
+    workspace: dict | None = None  # a visitor-built workspace; None means the ShipSafe sample
+
+
+class ProfileIn(BaseModel):
+    company_name: str = Field(default="", max_length=80)
+    description: str = Field(min_length=5, max_length=800)
+    industry: str = Field(default="", max_length=80)
+    customers: str = Field(default="", max_length=200)
+    region: str = Field(default="", max_length=120)
+    competitors: str = Field(default="", max_length=300)
+    decision: str = Field(default="", max_length=400)
+
+
+class PlanIn(BaseModel):
+    profile: ProfileIn
+    market: dict
+
+
+class CardIn(BaseModel):
+    workspace: dict
+    competitor: str = Field(min_length=1, max_length=120)
 
 
 class ObjectionIn(BaseModel):
@@ -163,14 +205,53 @@ def prospects(request: Request):
 def ask(body: AskIn, request: Request):
     _require_auth(request)
     _rate_limit(request)
-    return _ai_reply(ai.ask, body.question, body.history)
+    if body.workspace is not None:
+        _check_size(body.workspace)
+        return _ai_stream(workspace.ask(body.question, body.history, body.workspace))
+    return _ai_stream(ai.ask(body.question, body.history))
+
+
+def _check_size(ws: dict) -> None:
+    if len(json.dumps(ws)) > 80000:
+        raise HTTPException(413, "This workspace is too large. Please start a new one.")
+
+
+def _ai_json(fn, *args) -> dict:
+    try:
+        return fn(*args)
+    except Exception:  # surface a clean message; details go to logs
+        logger.exception("AI call failed")
+        raise HTTPException(502, "The AI service didn't answer. Please try again.")
+
+
+@app.post("/api/workspace/market")
+def workspace_market(body: ProfileIn, request: Request):
+    _require_auth(request)
+    _rate_limit(request)
+    return _ai_json(workspace.market, body.model_dump())
+
+
+@app.post("/api/workspace/plan")
+def workspace_plan(body: PlanIn, request: Request):
+    _require_auth(request)
+    _check_size(body.market)
+    _rate_limit(request)
+    return _ai_json(workspace.plan, body.profile.model_dump(), body.market)
+
+
+@app.post("/api/workspace/battlecard")
+def workspace_battlecard(body: CardIn, request: Request):
+    _require_auth(request)
+    _check_size(body.workspace)
+    _rate_limit(request)
+    return _ai_json(workspace.battlecard, body.workspace, body.competitor)
 
 
 @app.post("/api/objection")
 def objection(body: ObjectionIn, request: Request):
     _require_auth(request)
     _rate_limit(request)
-    return _ai_reply(ai.handle_objection, body.objection, body.competitor)
+    return _ai_stream(ai.handle_objection(body.objection, body.competitor))
 
 
 @app.post("/api/briefing")
@@ -180,7 +261,7 @@ def briefing(body: BriefingIn, request: Request):
     if not prospect and not (body.text and body.text.strip()):
         raise HTTPException(400, "Pick a prospect or describe one.")
     _rate_limit(request)
-    return _ai_reply(ai.briefing, prospect, body.text)
+    return _ai_stream(ai.briefing(prospect, body.text))
 
 
 _PDF_CSS = """<style>
@@ -198,8 +279,9 @@ th { background: #EEF0FB; }
 @app.post("/api/export-pdf")
 def export_pdf(body: PdfIn, request: Request):
     _require_auth(request)
+    # The markdown comes from the browser; escape raw HTML so xhtml2pdf never fetches remote URLs.
     html = (f"<html><head><meta charset='utf-8'>{_PDF_CSS}</head><body><h1>{htmllib.escape(body.title)}</h1>"
-            f"{_html(body.markdown)}<p class='foot'>Competitor Brief · demo data, fictional companies</p></body></html>")
+            f"{_html(body.markdown.replace('<', '&lt;'))}<p class='foot'>Competitor Brief · demo data, fictional companies</p></body></html>")
     out = io.BytesIO()
     if pisa.CreatePDF(html, dest=out, encoding="utf-8").err:
         raise HTTPException(500, "PDF export failed")

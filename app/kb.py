@@ -50,17 +50,10 @@ def corpus() -> str:
     return "\n\n".join(parts)
 
 
+@lru_cache(maxsize=1)
+def lab() -> dict:
+    return json.loads(_read("lab_tests.json"))
+
+
 def stats() -> dict:
-    cards = battlecards()
-    return {
-        "company": "ShipSafe",
-        "competitors": [
-            {"slug": c["slug"], "name": c["name"], "threat": c["threat"],
-             "win_rate": c["win_rate"], "deals": c["deals"], "tagline": c["tagline"]}
-            for c in cards
-        ],
-        "overall_win_rate": 57,
-        "competitive_deals": 414,
-        "pov_win_rate": 78,
-        "avg_acv": 121000,
-    }
+    return {"company": "ShipSafe", "documents": corpus().count("=== FILE: "), "lab": lab()}
