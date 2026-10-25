@@ -1,0 +1,5 @@
+fastapi==0.143.1
+uvicorn[standard]==0.54.0
+google-genai==2.30.1
+markdown==3.10.3
+xhtml2pdf==0.2.17
